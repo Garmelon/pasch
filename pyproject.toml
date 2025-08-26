@@ -5,3 +5,7 @@ description = "Python-based Arch System Config Helper"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
+
+[tool.ruff.lint]
+select = ["RUF"]
+preview = true
