@@ -1,7 +1,9 @@
 {
   "recommendations": [
-    "astral-sh.ty",
+    // "astral-sh.ty",
     "charliermarsh.ruff",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "meta.pyrefly",
+    "tamasfe.even-better-toml"
   ]
 }
