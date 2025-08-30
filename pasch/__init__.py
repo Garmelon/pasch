@@ -1,5 +1,5 @@
 from . import modules
-from .cmd import run_capture, run_check
+from .cmd import run_capture, run_execute
 from .orchestrator import Module, Orchestrator
 
 __all__: list[str] = [
@@ -7,5 +7,5 @@ __all__: list[str] = [
     "Orchestrator",
     "modules",
     "run_capture",
-    "run_check",
+    "run_execute",
 ]

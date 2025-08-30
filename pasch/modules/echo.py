@@ -1,4 +1,4 @@
-from pasch.cmd import run_check
+from pasch.cmd import run_execute
 from pasch.orchestrator import Module, Orchestrator
 
 
@@ -11,4 +11,4 @@ class Echo(Module):
         self.args.append(arg)
 
     def realize(self) -> None:
-        run_check("echo", *self.args)
+        run_execute("echo", *self.args)
