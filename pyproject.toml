@@ -3,7 +3,7 @@ name = "pasch"
 version = "0.0.0"
 description = "Python-based Arch System Config Helper"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = ["rich>=14.1.0"]
 
 [tool.ruff.lint]
