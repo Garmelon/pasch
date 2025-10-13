@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from subprocess import CalledProcessError
 
 from rich import print
 from rich.markup import escape
@@ -82,17 +83,22 @@ class Pacman(Module):
     def _install_packages(self, packages: set[str]) -> None:
         if self.orchestrator.dry_run:
             return
-        if not packages:
-            return
 
-        self._pacman_execute("-S", "--needed", *sorted(packages))
-        self._pacman_execute("-D", "--asexplicit", *sorted(packages))
+        if packages:
+            self._pacman_execute("-S", "--needed", *sorted(packages))
+            self._pacman_execute("-D", "--asexplicit", *sorted(packages))
 
     def _uninstall_packages(self, packages: set[str]) -> None:
         if self.orchestrator.dry_run:
             return
-        if not packages:
-            return
 
-        self._pacman_execute("-D", "--asdeps", *sorted(packages))
-        self._pacman_execute("-Rsn", *self._pacman_capture("-Qqdt").splitlines())
+        if packages:
+            self._pacman_execute("-D", "--asdeps", *sorted(packages))
+
+        try:
+            to_remove = self._pacman_capture("-Qqdt").splitlines()
+        except CalledProcessError:
+            return  # pacman returns nonzero exit code if the query is empty
+
+        if to_remove:
+            self._pacman_execute("-Rsn", *to_remove)
