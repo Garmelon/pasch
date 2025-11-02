@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from subprocess import CalledProcessError
 
-from rich import print
 from rich.markup import escape
 
 from pasch.cmd import run_capture, run_execute
@@ -37,9 +36,9 @@ class Pacman(Module):
         to_uninstall = installed - target
 
         for package in sorted(to_install):
-            print(f"[bold green]+[/] {escape(package)}")
+            self.c.print(f"[bold green]+[/] {escape(package)}")
         for package in sorted(to_uninstall):
-            print(f"[bold red]-[/] {escape(package)}")
+            self.c.print(f"[bold red]-[/] {escape(package)}")
 
         self._install_packages(to_install)
         self._uninstall_packages(to_uninstall)

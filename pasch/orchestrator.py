@@ -3,21 +3,27 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from rich import print
+from rich.console import Console
 from rich.markup import escape
+from xdg_base_dirs import xdg_state_home
 
 
 class Module(ABC):
     def __init__(self, orchestrator: Orchestrator) -> None:
         self.orchestrator = orchestrator
         self.orchestrator.register(self)
+        self.c = self.orchestrator.console
 
     @abstractmethod
     def realize(self) -> None: ...
 
 
 class Orchestrator:
-    def __init__(self, dry_run: bool = False) -> None:
+    def __init__(self, name: str = "pasch", dry_run: bool = False) -> None:
+        self.name = name
         self.dry_run = dry_run
+        self.state_dir = xdg_state_home() / self.name
+        self.console = Console(highlight=False)
 
         self._frozen: bool = False
         self._modules: list[Module] = []

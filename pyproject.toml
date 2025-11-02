@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Python-based Arch System Config Helper"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["rich>=14.1.0"]
+dependencies = ["rich>=14.1.0", "xdg-base-dirs>=6.0.2"]
 
 [tool.ruff.lint]
 select = ["RUF", "F"]
