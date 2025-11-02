@@ -6,6 +6,7 @@ from pathlib import Path
 
 from rich.markup import escape
 
+from pasch.file.file import File
 from pasch.orchestrator import Module, Orchestrator
 
 
@@ -101,9 +102,9 @@ class Files(Module):
     def _read_path(self, path: Path | str) -> Path:
         return self._root / path
 
-    def add(self, path: Path | str, content: bytes) -> None:
+    def add(self, path: Path | str, content: File) -> None:
         path = self._read_path(path)
-        self._files[path_to_str(path)] = content
+        self._files[path_to_str(path)] = content.to_bytes()
 
     def realize(self) -> None:
         for path, content in sorted(self._files.items()):
