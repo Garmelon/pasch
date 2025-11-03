@@ -121,10 +121,13 @@ class Files(Module):
             return
 
         relative_path = path.relative_to(self._root, walk_up=True)
-        self.c.print(f"[bold green]+[/] {escape(str(relative_path))}", highlight=False)
+        if cur_hash is None:
+            self.c.print(f"[bold green]+[/] {escape(str(relative_path))}")
+        else:
+            self.c.print(f"[bold yellow]~[/] {escape(str(relative_path))}")
 
         if reason := self._file_db.verify_hash(path, cur_hash):
-            self.c.print(f"[red]Error:[/] {escape(reason)}", highlight=False)
+            self.c.print(f"[red]Error:[/] {escape(reason)}")
 
         # We want to avoid scenarios where we fail to remember a file we've
         # written. It is better to remember a file with an incorrect hash than
@@ -135,11 +138,11 @@ class Files(Module):
 
     def _remove_file(self, path: Path) -> None:
         relative_path = path.relative_to(self._root, walk_up=True)
-        self.c.print(f"[bold red]-[/] {escape(str(relative_path))}", highlight=False)
+        self.c.print(f"[bold red]-[/] {escape(str(relative_path))}")
 
         cur_hash = hash_file(path)
         if reason := self._file_db.verify_hash(path, cur_hash):
-            self.c.print(f"[red]Error:[/] {escape(reason)}", highlight=False)
+            self.c.print(f"[red]Error:[/] {escape(reason)}")
 
         try:
             path.unlink()
