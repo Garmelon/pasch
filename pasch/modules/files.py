@@ -135,6 +135,7 @@ class Files(Module):
         cur_hash = hash_file(path)
         target_hash = hash_data(content)
         if cur_hash == target_hash:
+            self._file_db.add_hash(path, target_hash)
             return
 
         relative_path = path.relative_to(self._root, walk_up=True)
