@@ -1,5 +1,5 @@
-from pasch.cmd import run_execute
 from pasch.orchestrator import Module, Orchestrator
+from pasch.util import run_execute
 
 
 class Echo(Module):

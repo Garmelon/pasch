@@ -4,10 +4,12 @@ import random
 import string
 from pathlib import Path
 
+from rich.console import Console
 from rich.markup import escape
 
 from pasch.file.file import File
 from pasch.orchestrator import Module, Orchestrator
+from pasch.util import fmt_diff, prompt
 
 
 def random_tmp_path(path: Path) -> Path:
@@ -40,6 +42,21 @@ def hash_file(path: Path) -> str | None:
 
 def path_to_str(path: Path) -> str:
     return str(path.resolve())
+
+
+def diff_and_prompt(c: Console, path: Path, new_content_bytes: bytes) -> bool:
+    try:
+        new_content = new_content_bytes.decode("utf-8")
+    except:
+        return False
+
+    try:
+        old_content = path.read_text(encoding="utf-8")
+    except:
+        return False
+
+    c.print(fmt_diff(old_content, new_content))
+    return prompt("Replace file contents?", default=False)
 
 
 class FileDb:
@@ -128,7 +145,8 @@ class Files(Module):
 
         if reason := self._file_db.verify_hash(path, cur_hash):
             self.c.print(f"[red]Error:[/] {escape(reason)}")
-            return
+            if not diff_and_prompt(self.c, path, content):
+                return
 
         # We want to avoid scenarios where we fail to remember a file we've
         # written. It is better to remember a file with an incorrect hash than

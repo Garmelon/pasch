@@ -3,8 +3,8 @@ from subprocess import CalledProcessError
 
 from rich.markup import escape
 
-from pasch.cmd import run_capture, run_execute
 from pasch.orchestrator import Module, Orchestrator
+from pasch.util import run_capture, run_execute
 
 
 @dataclass
