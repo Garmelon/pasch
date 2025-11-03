@@ -128,6 +128,7 @@ class Files(Module):
 
         if reason := self._file_db.verify_hash(path, cur_hash):
             self.c.print(f"[red]Error:[/] {escape(reason)}")
+            return
 
         # We want to avoid scenarios where we fail to remember a file we've
         # written. It is better to remember a file with an incorrect hash than
@@ -143,6 +144,7 @@ class Files(Module):
         cur_hash = hash_file(path)
         if reason := self._file_db.verify_hash(path, cur_hash):
             self.c.print(f"[red]Error:[/] {escape(reason)}")
+            return
 
         try:
             path.unlink()
