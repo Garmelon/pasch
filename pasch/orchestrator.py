@@ -13,9 +13,9 @@ from xdg_base_dirs import xdg_state_home
 
 class Module(ABC):
     def __init__(self, orchestrator: Orchestrator) -> None:
-        self.orchestrator = orchestrator
-        self.orchestrator.register(self)
-        self.c = self.orchestrator.console
+        self.o = orchestrator
+        self.o.register(self)
+        self.c = self.o.c
 
     @abstractmethod
     def realize(self) -> None: ...
@@ -29,19 +29,14 @@ def _snake_to_camel(s: str) -> str:
 def module[**P](
     func: Callable[Concatenate[Orchestrator, P], None],
 ) -> Callable[Concatenate[Orchestrator, P], None]:
-    def __init__(
-        self,
-        orchestrator: Orchestrator,
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> None:
-        super(self.__class__, self).__init__(orchestrator)
+    def __init__(self, o: Orchestrator, *args: P.args, **kwargs: P.kwargs) -> None:
+        super(self.__class__, self).__init__(o)
         self.args = args
         self.kwargs = kwargs
 
     def realize(self) -> None:
         # pyrefly: ignore
-        return func(self.orchestrator, *self.args, **self.kwargs)
+        return func(self.o, *self.args, **self.kwargs)
 
     # pyrefly: ignore
     return type(
@@ -57,7 +52,7 @@ class Orchestrator:
         self.dry_run = dry_run
 
         self.state_dir = xdg_state_home() / self.name
-        self.console = Console(highlight=False)
+        self.c = Console(highlight=False)
 
         self.user = getpass.getuser()
         self.host = socket.gethostname()

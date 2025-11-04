@@ -80,7 +80,7 @@ class Pacman(Module):
         return self._resolve_packages(groups, packages)
 
     def _install_packages(self, packages: set[str]) -> None:
-        if self.orchestrator.dry_run:
+        if self.o.dry_run:
             return
 
         if packages:
@@ -88,7 +88,7 @@ class Pacman(Module):
             self._pacman_execute("-D", "--asexplicit", *sorted(packages))
 
     def _uninstall_packages(self, packages: set[str]) -> None:
-        if self.orchestrator.dry_run:
+        if self.o.dry_run:
             return
 
         if packages:

@@ -113,7 +113,7 @@ class Files(Module):
     ) -> None:
         super().__init__(orchestrator)
         self._files: dict[str, bytes] = {}
-        self._file_db = FileDb(self.orchestrator.state_dir / file_db_name)
+        self._file_db = FileDb(self.o.state_dir / file_db_name)
         self._root = root or Path.home()
 
     def _read_path(self, path: Path | str) -> Path:
