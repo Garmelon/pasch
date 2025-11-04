@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import getpass
+import socket
 from abc import ABC, abstractmethod
 
 from rich import print
@@ -22,8 +24,12 @@ class Orchestrator:
     def __init__(self, name: str = "pasch", dry_run: bool = False) -> None:
         self.name = name
         self.dry_run = dry_run
+
         self.state_dir = xdg_state_home() / self.name
         self.console = Console(highlight=False)
+
+        self.user = getpass.getuser()
+        self.host = socket.gethostname()
 
         self._frozen: bool = False
         self._modules: list[Module] = []
