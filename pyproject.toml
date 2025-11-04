@@ -13,3 +13,6 @@ dependencies = [
 [tool.ruff.lint]
 select = ["RUF", "F"]
 preview = true
+
+[tool.pyrefly]
+project-includes = ["**/*.py*"]
