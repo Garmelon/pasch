@@ -39,7 +39,7 @@ class TomlFile(File):
     def to_text(self) -> TextFile:
         file = TextFile()
         file.tag(comment="#")
-        file.append(toml.dumps(self.data))
+        file.append(toml.dumps(self.data), newline=False)
         return file
 
     def to_bytes(self) -> bytes:
