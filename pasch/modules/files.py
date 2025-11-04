@@ -78,7 +78,7 @@ class FileDb:
         return data
 
     def _save(self, data: dict[str, str]) -> None:
-        atomic_write(self._path, json.dumps(data).encode("utf-8"))
+        atomic_write(self._path, json.dumps(data, indent=2).encode("utf-8"))
 
     def add_hash(self, path: Path, hash: str) -> None:
         data = self._load()
