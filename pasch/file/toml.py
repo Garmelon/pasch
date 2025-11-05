@@ -4,6 +4,7 @@ from typing import Any, Self
 import toml
 
 from .file import File
+from .json import JsonFile
 from .text import TextFile
 
 
@@ -15,31 +16,33 @@ class TomlFileProxy:
     def at(self, *path: str) -> Self:
         return TomlFileProxy(self.file, self.path + path)
 
-    def set(self, value: Any) -> None:
-        if not self.path:
-            self.file.set(value)
+    def set(self, path: str | tuple[str, ...], value: Any) -> None:
+        if isinstance(path, str):
+            path = (path,)
 
-        data = self.file.data
-        *parts, last = self.path
-        for part in parts:
-            data = data.setdefault(part, {})
-        data[last] = value
+        self.file.set(self.path + path, value)
 
 
 class TomlFile(File):
     def __init__(self, data: Any = {}) -> None:
-        self.data = data
+        self.json = JsonFile(data)
 
     def at(self, *path: str) -> TomlFileProxy:
         return TomlFileProxy(self, path)
 
-    def set(self, value: Any) -> None:
-        self.data = value
+    def get(self, path: str | tuple[str, ...]) -> Any:
+        return self.json.get(path)
+
+    def set(self, path: str | tuple[str, ...], value: Any) -> None:
+        self.json.set(path, value)
+
+    def merge(self, path: str | tuple[str, ...], value: Any) -> None:
+        self.json.merge(path, value)
 
     def to_text(self) -> TextFile:
         file = TextFile()
         file.tag(comment="#")
-        file.append(toml.dumps(self.data), newline=False)
+        file.append(toml.dumps(self.json.data), newline=False)
         return file
 
     def to_bytes(self) -> bytes:
