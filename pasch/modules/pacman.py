@@ -26,7 +26,7 @@ class Pacman(Module):
     def exclude(self, group: str, *packages: str) -> None:
         self.excluded.setdefault(group, set()).update(packages)
 
-    def realize(self) -> None:
+    def execute(self) -> None:
         groups = self._get_groups()
 
         installed = self._get_explicitly_installed_packages()

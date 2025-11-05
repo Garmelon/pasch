@@ -123,7 +123,7 @@ class Files(Module):
         path = self._read_path(path)
         self._files[path_to_str(path)] = content.to_bytes()
 
-    def realize(self) -> None:
+    def execute(self) -> None:
         for path, content in sorted(self._files.items()):
             self._write_file(self._read_path(path), content)
 

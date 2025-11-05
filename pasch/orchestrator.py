@@ -2,23 +2,24 @@ from __future__ import annotations
 
 import getpass
 import socket
-from abc import ABC, abstractmethod
 from typing import Callable, Concatenate
 
-from rich import print
 from rich.console import Console
 from rich.markup import escape
 from xdg_base_dirs import xdg_state_home
 
 
-class Module(ABC):
+class Module:
     def __init__(self, orchestrator: Orchestrator) -> None:
         self.o = orchestrator
         self.o.register(self)
         self.c = self.o.c
 
-    @abstractmethod
-    def realize(self) -> None: ...
+    def configure(self) -> None:
+        pass
+
+    def execute(self) -> None:
+        pass
 
 
 def _snake_to_camel(s: str) -> str:
@@ -34,7 +35,7 @@ def module[**P](
         self.args = args
         self.kwargs = kwargs
 
-    def realize(self) -> None:
+    def configure(self) -> None:
         # pyrefly: ignore
         return func(self.o, *self.args, **self.kwargs)
 
@@ -42,8 +43,11 @@ def module[**P](
     return type(
         _snake_to_camel(func.__name__),
         (Module,),
-        {"__init__": __init__, "realize": realize},
+        {"__init__": __init__, "configure": configure},
     )
+
+
+# TODO @module_gen for generator-based modules
 
 
 class Orchestrator:
@@ -67,6 +71,15 @@ class Orchestrator:
 
     def realize(self) -> None:
         self._frozen = True
+
+        self.c.print()
+        self.c.print("[bold bright_cyan]# Configure")
         for module in reversed(self._modules):
-            print(f"[bold bright_magenta]\\[{escape(type(module).__name__)}]")
-            module.realize()
+            self.c.print(f"[bold bright_magenta]\\[{escape(type(module).__name__)}]")
+            module.configure()
+
+        self.c.print()
+        self.c.print("[bold bright_cyan]# Execute")
+        for module in self._modules:
+            self.c.print(f"[bold bright_magenta]\\[{escape(type(module).__name__)}]")
+            module.execute()

@@ -10,5 +10,5 @@ class Echo(Module):
     def add(self, arg: str) -> None:
         self.args.append(arg)
 
-    def realize(self) -> None:
+    def execute(self) -> None:
         run_execute("echo", *self.args)
