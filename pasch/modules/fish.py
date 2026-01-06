@@ -76,18 +76,19 @@ class Fish(Module):
         for segment in self.path:
             self.add_command(f"fish_add_path --path --append {fescape(segment)}")
         for name, replacement in sorted(self.abbrs.items()):
-            self.add_interactive(f"'abbr' {escape(name)} {fescape(replacement)}")
+            self.add_interactive(f"abbr {escape(name)} {fescape(replacement)}")
         for name, value in sorted(self.env_vars.items()):
             self.add_command(f"set -gx {escape(name)} {fescape(value)}")
 
         self.commands.extend(commands)
         self.interactive_commands.extend(interactive_commands)
 
-        for command in self.commands:
-            file.append(command)
-        if self.commands and self.interactive_commands:
+        if self.commands:
             file.append("")
+            for command in self.commands:
+                file.append(command)
         if self.interactive_commands:
+            file.append("")
             file.append("if status is-interactive")
             for command in self.interactive_commands:
                 file.append(f"  {command}")
