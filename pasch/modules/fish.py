@@ -73,9 +73,8 @@ class Fish(Module):
         self.commands = []
         self.interactive_commands = []
 
-        if self.path:
-            segments = " ".join(fescape(s) for s in self.path)
-            self.add_command(f"set PATH $PATH {segments}")
+        for segment in self.path:
+            self.add_command(f"fish_add_path --path --append {fescape(segment)}")
         for name, replacement in sorted(self.abbrs.items()):
             self.add_interactive(f"'abbr' {escape(name)} {fescape(replacement)}")
         for name, value in sorted(self.env_vars.items()):
