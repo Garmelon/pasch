@@ -2,7 +2,7 @@
   "recommendations": [
     // "astral-sh.ty",
     "charliermarsh.ruff",
-    "esbenp.prettier-vscode",
+    "prettier.prettier-vscode",
     "meta.pyrefly",
     "tamasfe.even-better-toml"
   ]
