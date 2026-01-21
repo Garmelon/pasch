@@ -42,8 +42,8 @@ class JsonFileProxy:
 
 
 class JsonFile(File):
-    def __init__(self, data: Any = {}) -> None:
-        self.data = data
+    def __init__(self, data: Any = None) -> None:
+        self.data = {} if data is None else data
 
     def at(self, *path: str) -> JsonFileProxy:
         return JsonFileProxy(self, path)
