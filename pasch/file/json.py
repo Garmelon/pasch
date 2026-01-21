@@ -76,7 +76,7 @@ class JsonFile(File):
         self.set(path, TAG)
 
     def to_text(self) -> TextFile:
-        return TextFile(json.dumps(self.data))
+        return TextFile(json.dumps(self.data, sort_keys=True, indent=2) + "\n")
 
     def to_bytes(self) -> bytes:
         return self.to_text().to_bytes()
