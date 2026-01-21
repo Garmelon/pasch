@@ -56,7 +56,7 @@ class Pacman(Module):
         return set(self._pacman_capture("-Qqe").splitlines())
 
     def _get_groups(self) -> dict[str, set[str]]:
-        groups = {}
+        groups: dict[str, set[str]] = {}
         for line in self._pacman_capture("-Sgg").splitlines():
             group, package = line.split(" ", maxsplit=1)
             groups.setdefault(group, set()).add(package)
