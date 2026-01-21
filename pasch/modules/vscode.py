@@ -20,28 +20,38 @@ class Vscode(Module):
 
         self.microsoft = False
         self.disable_telemetry = True
+        self.enable_proposed_apis = True
 
         self.extensions: set[str] = set()
+
         self.settings = JsonFile()
+        self.argv = JsonFile()
 
     def install(self, *extensions: str) -> None:
         self.extensions.update(extensions)
 
     def configure(self) -> None:
         self.settings.tag()
+        self.argv.tag()
 
         if self.disable_telemetry:
             self.settings.set("telemetry.editStats.enabled", False)
             self.settings.set("telemetry.feedback.enabled", False)
             self.settings.set("telemetry.telemetryLevel", "off")
             self.settings.set("update.mode", "none")
+            self.argv.set("enable-crash-reporter", False)
+
+        if self.enable_proposed_apis:
+            self.argv.set("enable-proposed-api", list(sorted(self.extensions)))
 
         if self.microsoft:
             self._pacman.install("visual-studio-code-bin")
             self._files.add(".config/Code/User/settings.json", self.settings)
+            self._files.add(".vscode/argv.json", self.argv)
         else:
             self._pacman.install("code")
             self._files.add(".config/Code - OSS/User/settings.json", self.settings)
+            self._files.add(".vscode-oss/argv.json", self.argv)
 
     def execute(self) -> None:
         installed = set(run_capture("code", "--list-extensions").splitlines())
