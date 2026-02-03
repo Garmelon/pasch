@@ -95,7 +95,7 @@ class Pacman(Module):
             self._pacman_execute("-D", "--asdeps", *sorted(packages))
 
         try:
-            to_remove = self._pacman_capture("-Qqdt").splitlines()
+            to_remove = self._pacman_capture("-Qqdtt").splitlines()
         except CalledProcessError:
             return  # pacman returns nonzero exit code if the query is empty
 
