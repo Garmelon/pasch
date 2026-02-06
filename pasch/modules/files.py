@@ -26,6 +26,17 @@ def atomic_write(path: Path, content: bytes) -> None:
     tmp_path.rename(path)
 
 
+def set_executable(path: Path, executable: bool) -> None:
+    mask = 0o100
+    mode = path.stat().st_mode
+
+    is_executable = (mode & mask) != 0
+    if executable == is_executable:
+        return
+
+    path.chmod(mode ^ mask)
+
+
 def hash_data(data: bytes) -> str:
     m = hashlib.sha256()
     m.update(data)
@@ -112,26 +123,28 @@ class Files(Module):
         root: Path | None = None,
     ) -> None:
         super().__init__(orchestrator)
-        self._files: dict[str, bytes] = {}
+        self._files: dict[str, File] = {}
         self._file_db = FileDb(self.o.state_dir / file_db_name)
         self._root = root or Path.home()
 
     def _read_path(self, path: Path | str) -> Path:
         return self._root / path
 
-    def add(self, path: Path | str, content: File) -> None:
+    def add(self, path: Path | str, file: File) -> None:
         path = self._read_path(path)
-        self._files[path_to_str(path)] = content.to_bytes()
+        self._files[path_to_str(path)] = file
 
     def execute(self) -> None:
-        for path, content in sorted(self._files.items()):
-            self._write_file(self._read_path(path), content)
+        for path, file in sorted(self._files.items()):
+            self._write_file(self._read_path(path), file)
 
         for path in self._file_db.paths():
             if path not in self._files:
                 self._remove_file(self._read_path(path))
 
-    def _write_file(self, path: Path, content: bytes) -> None:
+    def _write_file(self, path: Path, file: File) -> None:
+        content = file.to_bytes()
+
         cur_hash = hash_file(path)
         target_hash = hash_data(content)
         if cur_hash == target_hash:
@@ -155,6 +168,7 @@ class Files(Module):
         # we write a file.
         self._file_db.add_hash(path, target_hash)
         atomic_write(path, content)
+        set_executable(path, file.executable)
 
     def _remove_file(self, path: Path) -> None:
         relative_path = path.relative_to(self._root, walk_up=True)
