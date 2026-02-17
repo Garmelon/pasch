@@ -42,8 +42,15 @@ class JsonFileProxy:
 
 
 class JsonFile(File):
-    def __init__(self, data: Any = None) -> None:
+    def __init__(
+        self,
+        data: Any = None,
+        indent: int = 2,
+        trailing_newline: bool = True,
+    ) -> None:
         self.data = {} if data is None else data
+        self.indent = indent
+        self.trailing_newline = trailing_newline
 
     def at(self, *path: str) -> JsonFileProxy:
         return JsonFileProxy(self, path)
@@ -76,7 +83,12 @@ class JsonFile(File):
         self.set(path, TAG)
 
     def to_text(self) -> TextFile:
-        return TextFile(json.dumps(self.data, sort_keys=True, indent=2) + "\n")
+        file = TextFile()
+        file.append(
+            json.dumps(self.data, sort_keys=True, indent=self.indent),
+            newline=self.trailing_newline,
+        )
+        return file
 
     def to_bytes(self) -> bytes:
         return self.to_text().to_bytes()
