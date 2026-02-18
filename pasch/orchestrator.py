@@ -62,6 +62,7 @@ class Orchestrator:
         self.host = socket.gethostname()
 
         self._frozen: bool = False
+        self._configured: bool = False
         self._modules: list[Module] = []
 
     def register(self, module: Module) -> None:
@@ -69,7 +70,10 @@ class Orchestrator:
             raise Exception("registering module wile orchestrator is frozen")
         self._modules.append(module)
 
-    def realize(self) -> None:
+    def configure(self) -> None:
+        if self._configured:
+            raise Exception("reconfiguring a configured orchestrator")
+
         self._frozen = True
 
         self.c.print()
@@ -78,8 +82,18 @@ class Orchestrator:
             self.c.print(f"[bold bright_magenta]\\[{escape(type(module).__name__)}]")
             module.configure()
 
+        self._configured = True
+
+    def execute(self) -> None:
+        if not self._configured:
+            raise Exception("executing an unconfigured orchestrator")
+
         self.c.print()
         self.c.print("[bold bright_cyan]# Execute")
         for module in self._modules:
             self.c.print(f"[bold bright_magenta]\\[{escape(type(module).__name__)}]")
             module.execute()
+
+    def realize(self) -> None:
+        self.configure()
+        self.execute()
