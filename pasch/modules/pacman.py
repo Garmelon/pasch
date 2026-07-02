@@ -17,6 +17,7 @@ class Pacman(Module):
     def __init__(self, orchestrator: Orchestrator) -> None:
         super().__init__(orchestrator)
         self.binary: str = "pacman"
+        self.sudo: bool = True
         self.packages: set[str] = set()
         self.excluded: dict[str, set[str]] = {}
 
@@ -47,10 +48,10 @@ class Pacman(Module):
         return run_capture(self.binary, *args)
 
     def _pacman_execute(self, *args: str) -> None:
-        if self.binary == "paru":
-            run_execute(self.binary, *args)  # Calls sudo itself
-        else:
+        if self.sudo:
             run_execute("sudo", self.binary, *args)
+        else:
+            run_execute(self.binary, *args)
 
     def _get_explicitly_installed_packages(self) -> set[str]:
         return set(self._pacman_capture("-Qqe").splitlines())
